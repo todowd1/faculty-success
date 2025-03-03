@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MHA Competency Interactive Page</title>
+  <style>
+    /* General styling for layout */
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      position: relative;
+      height: 100vh;
+      background-color: #ffffff;
+      color: #333;
+    }
+
+	/* Body Color */
+body {
+    background-color: #ffffff;
+}
+
+    /* Circle container to hold quadrants */
+    .circle {
+      width: 650px;
+      height: 650px;
+      border-radius: 50%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      position: relative;
+      border: 6px solid #666;
+      margin-top: 20px;
+      background-color: white;
+      overflow: hidden;
+    }
+
+  /* Quadrant styles */
+  .quadrant {
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    align-items: center;      /* Vertically centers the text */
+    justify-content: center;  /* Horizontally centers the text */
+    font-size: 1.4em;        /* Slightly smaller font size */
+    overflow-wrap: break-word;
+    padding: 15px;
+    box-sizing: border-box;
+  }
+  
+  /* Styling for quadrant text */
+  .quadrant span {
+    display: inline-block;
+    text-align: center;
+    line-height: 1.2;
+	width: 100%; /* Ensures the span takes full width */
+    max-width: 90%; /* Prevents text from getting too close to edges */
+  }
+  
+  /* Adjust padding for left-side quadrants */
+  .quadrant.critical-thinking,
+  .quadrant.professionalism {
+    padding-left: 38px; /* Increase left padding to move text right */
+    padding-right: 10px; /* Reduce right padding to maintain balance */
+}
+
+  /* Adjust padding for right-side quadrants if needed for symmetry */
+  .quadrant.communications,
+  .quadrant.management {
+    padding-right: 30px; /* Increase right padding */
+    padding-left: 10px; /* Reduce left padding */
+}  
+
+    .critical-thinking { background-color: #850928; }
+    .communications { background-color: #CC8500; }
+    .professionalism { background-color: #3366A6; }
+    .management { background-color: #38812F; }
+	
+	/* Link colors for each quadrant box */
+    .critical-thinking-box a {
+      color: #ffffff; /* Light gold color for better contrast */
+      text-decoration: underline;
+    }
+	
+    .communications-box a {
+      color: #000000; /* Dark color for better contrast on yellow */
+      text-decoration: underline;
+    }
+
+    .management-box a {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    .professionalism-box a {
+      color: #000000;
+      text-decoration: underline;
+    }
+
+    /* Center label styling */
+    .center-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.4em;
+      color: #333;
+      background: white;
+      padding: 15px;
+      border-radius: 50%;
+      width: 140px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 6px solid #666;
+      flex-direction: column; /* Stack text vertically */
+      line-height: 1.2; /* Add proper line height */
+      word-wrap: break-word; /* Ensure words break properly */
+    }
+	
+	/* Focus indicators for interactive elements */
+      .quadrant:focus,
+      .definition-item:focus,
+       button:focus {
+       outline: 3px solid #666;
+       outline-offset: 2px;
+}
+
+    /* Definition boxes positioned close to quadrants */
+    .definition-box {
+      display: none;
+      position: absolute;
+      padding: 10px;
+      border-radius: 8px;
+      width: 255px;
+      color: white;
+      font-size: 1em;
+      line-height: 1.2;
+      border: 3px solid #666;
+      transform: translateY(-50%);
+    }
+	/* Main Pop-up content positioning for each quadrant */
+    .popup-content.critical-thinking {
+      left: 285px;
+      right: auto;
+      top: 25%;
+    } 
+	
+	.popup-content.communications {
+      right: 285px;
+      left: auto;
+      top: 25%;
+    }
+
+    .popup-content.management {
+      right: 285px;
+      left: auto;
+      top: 50%;
+    }
+
+    .popup-content.professionalism {
+      left: 285px;
+      top: 50%;
+    }
+	
+   /* Level popup positioning for each quadrant */
+   .level-popup.critical-thinking {
+     left: 570px;
+     right: auto;
+     top: 25%;
+    }
+   
+   .level-popup.communications {
+     right: 570px;
+     left: auto;
+     top: 25%;
+    }
+
+   .level-popup.management {
+    right: 570px;
+    left: auto;
+    top: 50%;
+   }
+
+   .level-popup.professionalism {
+     left: 570px;
+     top: 50%;
+    }
+
+	.definition-box[aria-hidden="false"] {
+      display: block;
+    }
+    .critical-thinking-box {
+      background-color: #850928;
+      left: 10px; /* Positioned closer to the circle */
+      top: 25%;
+    }
+    .communications-box {
+      background-color: #CC8500;
+      right: 10px; /* Keep this */
+      left: auto; /* Add this to override any default left positioning */
+      top: 25%;
+      transform: translateY(-50%); /* Add this to match other boxes' positioning */
+    }
+
+    .professionalism-box {
+      background-color: #3366A6;
+      left: 10px; /* Positioned closer to the circle */
+      bottom: 25%;
+      transform: translateY(50%);
+    }
+    .management-box {
+      background-color: #38812F;
+      right: 10px; /* Positioned closer to the circle */
+      bottom: 25%;
+      transform: translateY(50%);
+    }
+
+    .definition-item {
+      cursor: pointer;
+      text-decoration: underline;
+      margin: 5px 0;
+    }
+
+    /* Main Pop-up content box for definitions */
+    .popup-content {
+      background-color: #ffffff;
+      color: #333333;
+      padding: 15px;
+      border: 3px solid #666;
+      border-radius: 8px;
+      position: absolute;
+      width: 260px;
+      top: 25%;
+      left: 235px; /* Position next to the Critical Thinking & Analysis box */
+	  display: none;
+      z-index: 10;
+    }
+
+    .popup-content[aria-hidden="false"] {
+      display: block;
+    }
+
+    /* Smaller pop-up for Levels (e.g., Basic, Intermediate) */
+    .level-popup {
+      background-color: #ffffff;
+      color: #333333;
+      padding: 10px;
+      border: 3px solid #666;
+      border-radius: 8px;
+      position: absolute;
+      width: 265px;
+      top: 25%; /* Adjusted position for Level popup */
+      left: 520px; /* Positioned next to the main popup */
+      display: none;
+      z-index: 15;
+    }
+
+    .level-popup[aria-hidden="false"] {
+      display: block;
+    }
+	
+    /* Custom link color for Critical Thinking & Analysis box */
+    .critical-thinking-box a {
+      color: #ffffff; /* Gold color for better contrast */
+      text-decoration: underline;
+    }
+  
+  /* SVG Styling */
+.curved-text {
+  position: absolute;
+  top: -10;
+  left: -10;
+  pointer-events: none;
+}
+
+.curved-text text {
+  font-size: 1.2rem;
+  fill: solid #333;
+  letter-spacing: 3px; /* Adjust spacing between letters for even distribution */
+  text-transform: uppercase; /* Optional: to make text consistent */
+}
+
+.curved-text textPath {
+  dominant-baseline: middle;
+}
+
+/* Outer Circle Alignment */
+.outer-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 750px;
+  height: 750px;
+  border: 6px solid #666;
+  border-radius: 50%;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}
+
+/* Quadrant Circle Alignment */
+.circle {
+  position: absolute;
+  top: 2.5%;  /* Using a much smaller percentage to move it higher */
+  width: 650px;
+  height: 650px;
+  border-radius: 50%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  background-color: white;
+  overflow: hidden;
+}
+
+/* Title and Top Margin */
+.container h1 {
+  margin-top: 20px; /* Adjust spacing to prevent overlapping */
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.svg-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }	
+ </style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<div class="container" role="region" aria-labelledby="mha-competency-model">
+  <header> 
+    <h1 id="mha-competency-model">MHA Competency Model<sup>*</sup></h1>
+  </header>
+ 
+<div id="main-content">
+ <!-- Outer-Circle with Text -->
+<div class="outer-circle">
+
+  <!-- Outer Circle Text -->
+<section class="svg-container" aria-labelledby="program-title">
+<svg class="curved-text" width="750" height="750" viewBox="0 0 750 750" xmlns="http://www.w3.org/2000/svg" aria-label="Program Title" role="img">
+  <defs>
+    <path id="fullCirclePath" d="M 375,375 m -350,0 a 350,350 0 1,1 700,0 a 350,350 0 1,1 -700,0" />
+  </defs>
+  <text>
+    <textPath href="#fullCirclePath" startOffset="2%" textLength="2150" method="stretch"><tspan letter-spacing="2">
+      Health Care Administration Program - Merrilee Alexander Kick College of Business & Entrepreneurship - </tspan>
+    </textPath>
+  </text>
+</svg>
+</section>
+
+  <!-- Quadrant Circle -->
+  <div class="circle">
+ 
+   <div class="quadrant critical-thinking" role="button" aria-labelledby="critical-thinking" tabindex="0" aria-label="Critical Thinking & Analysis">
+    <span>Critical Thinking &<br>Analysis</span>
+   </div>
+
+   <div class="quadrant communications" role="button" aria-labelledby="communications" tabindex="0" aria-label="Communications">
+    <span>Communications</span>
+   </div>
+
+   <div class="quadrant professionalism" role="button" aria-labelledby="professionalism" tabindex="0" aria-label="Professionalism">
+    <span>Professionalism</span>
+</div>
+
+    <div class="quadrant management" role="button" aria-labelledby="management" tabindex="0" aria-label="Management & Leadership">
+    <span>Management &<br>Leadership</span>
+</div>
+
+    <div class="center-label" role="group" aria-labelledby="healthcare-leaders-label">
+  <span id="healthcare-leaders-label">Highly Successful Healthcare Leaders</span>
+</div>
+  </div>
+</div>
+
+  <!-- Definition Boxes -->
+  <!-- Critical Thinking Box -->
+  <div id="critical-thinking-box" class="definition-box critical-thinking-box" aria-hidden="true" tabindex="-1">
+    <h2>Critical Thinking & Analysis</h2>
+    <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Analytical Thinking')">Analytical Thinking</div>
+    <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Financial Skills')">Financial Skills</div>
+    <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Performance Measurement')">Performance Measurement</div>
+    <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Process Management & Organizational Design')">Process Management & Organizational Design</div>
+    <button onclick="closeBox('critical-thinking-box')" aria-label="Back to Quadrants">Back to Quadrants</button>
+  </div>
+  
+<!-- Communications Box -->
+<div id="communications-box" class="definition-box communications-box" aria-hidden="true" tabindex="-1">
+  <h2>Communications</h2>
+  <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Collaboration', 'communications')">Collaboration</div>
+  <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Communication Skills', 'communications')">Communication Skills</div>
+  <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Relationship Building', 'communications')">Relationship Building</div>
+  <button onclick="closeBox('communications-box')" aria-label="Back to Quadrants">Back to Quadrants</button>
+</div>
+
+<!-- Management & Leadership Box -->
+<div id="management-box" class="definition-box management-box" aria-hidden="true" tabindex="-1">
+  <h2>Management & Leadership</h2>
+  <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Change Leadership', 'management')">Change Leadership</div>
+  <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('HR Management', 'management')">HR Management</div>
+  <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('IT Management', 'management')">IT Management</div>
+  <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Innovative Thinking', 'management')">Innovative Thinking</div>
+  <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Project Management', 'management')">Project Management</div>
+  <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Strategic Orientation', 'management')">Strategic Orientation</div>
+  <button onclick="closeBox('management-box')" aria-label="Back to Quadrants">Back to Quadrants</button>
+</div>
+
+<!-- Professionalism Box -->
+<div id="professionalism-box" class="definition-box professionalism-box" aria-hidden="true" tabindex="-1">
+  <h2>Professionalism</h2>
+  <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Accountability', 'professionalism')">Accountability</div>
+  <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Self-Confidence', 'professionalism')">Self-Confidence</div>
+  <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Self-Development', 'professionalism')">Self-Development</div>
+  <div class="definition-item" role="button" aria-expanded="false" onclick="showDefinition('Team Leadership', 'professionalism')">Team Leadership</div>
+  <button onclick="closeBox('professionalism-box')" aria-label="Back to Quadrants">Back to Quadrants</button>
+</div>
+
+  <!-- Main Pop-up Content Box for detailed definitions -->
+  <div id="popup-content" class="popup-content" role="dialog" aria-labelledby="popup-title" aria-hidden="true" tabindex="-1">
+    <h2 id="popup-title">Competency Definition</h2>
+    <div id="popup-content-text"></div>
+    <button onclick="closePopup()" aria-label="Close Definition">Close</button>
+  </div>
+
+  <!-- Level-specific Pop-up Box for levels (e.g., Basic, Intermediate) -->
+  <div id="level-popup" class="level-popup" aria-hidden="true" tabindex="-1">
+    <div id="level-popup-text"></div>
+    <button onclick="closeLevelPopup()" aria-label="Close Level Popup">Close</button>
+  </div>
+
+</div>
+
+<script>
+// Show the selected box and move focus to it
+function showBox(id) {
+    // First, close ALL possible popups
+    const popup = document.getElementById('popup-content');
+    const levelPopup = document.getElementById('level-popup');
+    const boxes = document.querySelectorAll('.definition-box');
+    
+    // Reset everything to closed state
+    popup.setAttribute('aria-hidden', 'true');
+    levelPopup.setAttribute('aria-hidden', 'true');
+    boxes.forEach(box => {
+        box.setAttribute('aria-hidden', 'true');
+    });
+    
+    // Then open only the selected box
+    const selectedBox = document.getElementById(id);
+    if (selectedBox) {
+        selectedBox.setAttribute('aria-hidden', 'false');
+        selectedBox.focus();
+    }
+}
+
+
+// Close the box and return focus to the quadrants
+function closeBox(id) {
+    const box = document.getElementById(id);
+    box.setAttribute('aria-hidden', 'true');
+    
+    // Close all related popups
+    closePopup();
+    closeLevelPopup();
+    
+    const quadrant = document.querySelector(`[onclick="showBox('${id}')"]`);
+    quadrant.focus(); // Return focus to the corresponding quadrant
+}
+
+
+// Display a definition for the clicked item in a pop-up content area
+function showDefinition(term, quadrant) {
+  // Close the level popup first whenever a new definition is shown
+  const levelPopup = document.getElementById('level-popup');
+  levelPopup.setAttribute('aria-hidden', 'true');
+  
+    const definitions = {
+      // Critical Thinking definitions
+      "Analytical Thinking": `
+        The ability to understand a situation, issue, or problem by breaking it into smaller pieces or tracing its implications in a step-by-step way. It includes organizing the parts of a situation, issue, or problem systematically; making systematic comparisons of different features or aspects; setting priorities on a rational basis; and identifying time sequences, causal relationships, or if-then relationships.
+        <br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('analytical-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('analytical-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('analytical-basic')">1 - Basic</a>`,
+      "Financial Skills": `
+	   The ability to understand and explain financial and accounting information, prepare and manage budgets, and make sound long-term investment decisions.
+	<br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('financial-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('financial-intermediate')">2 - Intermediate</a><br>
+	<a href="#" onclick="showLevel('financial-basic')">1 - Basic</a>`,
+      "Performance Measurement": `
+	   The ability to apply complex concepts, develop creative solutions, or adapt previous solutions in new ways for breakthrough thinking in the field.
+	<br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('performance-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('performance-intermediate')">2 - Intermediate</a><br>
+	<a href="#" onclick="showLevel('performance-basic')">1 - Basic</a>`,
+      "Process Management & Organizational Design": `
+	   The ability to analyze and design or improve an organizational process including incorporating the principles of quality management as well as customer satisfaction.
+	<br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('process-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('process-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('process-basic')">1 - Basic</a>`,
+   
+      // Communications definitions
+      "Collaboration": `
+        The ability to work cooperatively with others, to be part of a team, to work together, as opposed to working separately or competitively. Collaboration applies when a person is a member of a group of people functioning as a team, but not the leader.
+        <br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('collaboration-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('collaboration-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('collaboration-basic')">1 - Basic</a>`,
+      "Communication Skills": `
+        The ability to speak and write in a clear, logical, and grammatical manner in formal and informal situations to prepare cogent business presentations and to facilitate a group.
+        <br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('communication-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('communication-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('communication-basic')">1 - Basic</a>`,
+      "Relationship Building": `
+        The ability to establish, build, and sustain professional contacts for the purpose of building networks of people with similar goals and that support similar interests.
+        <br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('relationship-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('relationship-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('relationship-basic')">1 - Basic</a>`,
+  
+     // Management & Leadership definitions
+     "Change Leadership": `
+        The ability to energize stakeholders and sustain their commitment to changes in approaches, processes, and strategies.
+        <br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('change-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('change-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('change-basic')">1 - Basic</a>`,
+      "HR Management": `
+        The ability to implement staff development and other management practices that represent contemporary best practices, comply with legal and regulatory requirements, optimize the performance of the workforce, including performance assessments, alternative compensation and benefit methods, and the alignment of human resource practices and processes to meet the strategic goals of the organization.
+        <br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('hr-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('hr-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('hr-basic')">1 - Basic</a>`,
+      "IT Management": `
+        The ability to see the potential in and understand the use of administrative and clinical technology and decision-support tools in process and performance improvement. Actively sponsors their utilization and the continuous upgrading of information management capabilities.
+        <br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('it-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('it-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('it-basic')">1 - Basic</a>`,
+      "Innovative Thinking": `
+        The ability to apply complex concepts, develop creative solutions, or adapt previous solutions in new ways for breakthrough thinking in the field.
+        <br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('innovative-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('innovative-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('innovative-basic')">1 - Basic</a>`,
+      "Project Management": `
+        The ability to plan, execute, and oversee a multi-year, large-scale project involving significant resources, scope, and impact. Examples include the construction of a major building, implementation of an enterprise-wide system (patient tracking, SAP), or development of a new service line.
+        <br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('project-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('project-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('project-basic')">1 - Basic</a>`,
+      "Strategic Orientation": `
+        The ability to consider the business, demographic, ethno-cultural, political, and regulatory implications of decisions and develop strategies that continually improve the long-term success and viability of the organization.
+        <br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('strategic-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('strategic-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('strategic-basic')">1 - Basic</a>`,
+  
+      // Professionalism definitions
+      "Accountability": `
+        The ability to hold people accountable to standards of performance or ensure compliance using the power of one’s position or force of personality appropriately and effectively, with the long-term good of the organization in mind.
+        <br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('accountability-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('accountability-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('accountability-basic')">1 - Basic</a>`,
+      "Self-Confidence": `
+        A belief in one's own capability to accomplish a task and select an effective approach to a task or problem. This includes confidence in one's ability as expressed in increasingly challenging circumstances and confidence in one's decisions or opinions.
+        <br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('confidence-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('confidence-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('confidence-basic')">1 - Basic</a>`,
+      "Self-Development": `
+        The ability to have an accurate view of one's own strengths and development needs, including the impact that one has on others. A willingness to address needs through reflective, self-directed learning, and by trying new approaches.
+        <br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('development-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('development-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('development-basic')">1 - Basic</a>`,
+      "Team Leadership": `
+        Sees oneself as a leader of others, from forming a team that possesses balanced capabilities to setting its mission, values, and norms, as well as to holding the team member accountable individually and as a group for results.
+        <br><br><strong>Levels:</strong><br>
+        <a href="#" onclick="showLevel('team-advanced')">3 - Advanced</a><br>
+        <a href="#" onclick="showLevel('team-intermediate')">2 - Intermediate</a><br>
+        <a href="#" onclick="showLevel('team-basic')">1 - Basic</a>`,
+  
+ };
+
+    const popup = document.getElementById('popup-content');
+    const popupText = document.getElementById('popup-content-text');
+	
+    popup.classList.remove('critical-thinking','communications', 'management', 'professionalism');
+    levelPopup.classList.remove('critical-thinking','communications', 'management', 'professionalism');
+    
+    // Add the appropriate quadrant class
+    if (quadrant) {
+        popup.classList.add(quadrant);
+        levelPopup.classList.add(quadrant);
+    }
+
+    popupText.innerHTML = definitions[term] || "No definition available";
+    popup.setAttribute('aria-hidden', 'false');
+    popup.focus();
+}
+	
+  // Show specific level details in a new level-specific pop-up
+function showLevel(level) {
+    const levels = {
+      // Levels for Critical Thinking & Analysis (analytical thinking, financial skills...)    
+	  
+      "analytical-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L3.4</strong> Develops Complex Plans or Analyses: Identifies multiple elements of a problem and breaks down each of those elements in detail, showing causal relationships between them; Peels back multiple layers of a problem; Uses several analytical techniques to identify potential solutions and weigh the value of each.",
+      "analytical-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L3.3</strong> Recognizes Multiple Relationships Makes multiple causal links: several potential causes of events, several consequences of actions, or multiple-part chain of events (A leads to B leads to C leads to D); Analyzes relationships among several parts of a problem or situation (e.g., anticipates obstacles and thinks ahead about next steps, in detail, with multiple steps.<br> <strong>L3.2</strong> Identifies Basic Relationships: Identifies the cause-and-effect relationship between two aspects of a situation; Separates situations into two parts: pro and con; Sorts out a list of tasks in order of importance.",
+      "analytical-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L3.1</strong> Breaks problems into simple lists of tasks or activities without assigning values; lists items with no particular order or set of priorities.",
+    
+      "financial-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L8.5</strong> Develops Long-term Financial Plans: Develops long-term plans for funding growth and development (e.g., new services, clinical programs, community outreach); Develops long-term capital spending for building renovation and expansion; Develops funding sources and their financial implications.<br> <strong>L8.4</strong> Evaluates Financial Analyses and Investments: Analyzes rate of return, net present value, cash flow analyses, and risk-return trade-offs and cost-benefit analyses; Analyzes population, disease, utilization data; Understands basics of insurance rating and actuarial risk.",
+      "financial-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L8.3</strong> Understands Impact of Reimbursement Models: Assesses reimbursement and payment system alternatives; Explains connection between models and behavior of providers and payers; Develops incentives; Considers impact of reimbursement and payment systems.<br> <strong>L8.2</strong> Manages Budgets and Assets: Develops budgets; Demonstrates expense and revenue management (unit or department); Manages budget variances, including revisions and corrective actions; Explains expense sources and management alternatives with implications; Understands sources of revenue including sensitivity analyses; Demonstrates capital budgeting and asset management.",
+      "financial-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L8.1</strong> Explain the Organization’s Financial Metrics and Reports: Uses financial metrics to drive and track the organization’s success; Explains income statement, balance sheet, cash flow; Explains indicators of financial health, especially profitability, and accounting entries through general ledger to revenue.",
+  
+      "performance-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L17.3</strong> Uses Evidence-based Approaches to Support Community Wellness: Monitors community wellness; Measures organization success by tracking community wellness and performance against national criteria and priorities; Uses advanced warning measures to enable the movement of people, equipment, and resources; Anticipates community needs; Ensures timeliness, effectiveness, and efficiency of services; Advocates for treatment and other care decisions that are evidenced based and patient/customer centered.",
+      "performance-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L17.2</strong> Monitors a <i>Scorecard</i> of Quantitative and Qualitative Measures: Tracks financial, customer, quality, and employee performance measures; Uses patient and constituent satisfaction scores, as well as demographic and epidemiological statistics to set organizational priorities, plans, and investments; Gathers both quantitative and qualitative information on customer perceptions, market position, and financial viability; Track high-incidence procedures and conditions; Establishes procedures based on evidence; Ensures medical professionals undergo quality reviews; Uses measurement systems to determine <i>early warning</i> as well as <i>rear window</i> indicators.",
+      "performance-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L17.1</strong> Monitors Indicators of Performance: Uses knowledge of customers, markets, and financial and management accounting to track organization performance and financial results; Implements basic patient tracking (e.g., registration, invoicing, third-party payer) and operational (e.g., numbers of procedures, equipment usage) measurement systems; Reports results in an accurate, timely manner that clearly shows organization performance.",
+  
+      "process-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L18.4</strong> Understand the Basics of Organization Governance: Understands governance practices, including board relations, committee structure, and fiduciary, ethics, and clinical review responsibilities; Defines role and responsibilities of foundations and other auxiliary organizations; Uses key governing and regulatory organizations such as state, county, and city governments; Uses organization governance to enhance quality, customer satisfaction, and performance.",
+      "process-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L18.3</strong> Evaluates Organization Structure and Design: Assesses organizing structures (functional, departmental, service line, etc.) and their advantages and disadvantages; Understands basic differences in provider structures (i.e., practice site, teaching hospital, community hospital, clinic, sub-acute provider); Uses organization structure to design and improve performance.<br> <strong>L18.2</strong> Benchmarks Good Processes and Practices: Conducts benchmarking and best practices research and interpretation to improve both clinical and non-clinical organizational practices; Understands customer service and satisfaction drivers; Understands continuum of care across different delivery sites (e.g., outpatient, acute care, specialty clinic); Defines roles and responsibilities of different caregivers and other providers; Defines roles and responsibilities of administrators and departments; Understands legal, accrediting, and regulatory requirements; Understands clinical research requirements and practices; Knows patient and information confidentiality requirements; Determines costs and revenue implications.",
+      "process-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L18.1</strong> Conducts Process Flow Analyses: Uses process mapping and analysis software; Maps process steps; Identifies key decision points; Determines staffing requirements (numbers, costs and essential knowledge, skills and other attributes), cost implications, and service implications.",
+	  
+      // Levels for Communications (collaboration, communication skills...)
+	  
+      "collaboration-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L5.4</strong> Encourages Others. Publicly credits others who have performed well; Encourages others; Empowers others.",
+      "collaboration-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L5.3</strong> Solicits Input. Genuinely values others' input and expertise; Actively seeks the input of others to increase the quality of solutions developed; Displays willingness to learn from others, including subordinates and peers; Solicits ideas and opinions to help form specific decisions or plans; Works to create common mindset.<br> <strong>L5.2</strong> Expresses Positive Attitudes and Expectations of Team or Team Members. Expresses positive attitudes and expectations of others in terms of their abilities, expected contributions, etc.; Speaks of team members in positive terms, either to the team member directly or to a third party; Develops effective working interactions with teammates.",
+      "collaboration-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L5.1</strong> Conducts work in a cooperative manner. Supports team decisions; Does his or her share of the work; Keeps other team members informed and up-to-date about what is happening in the group; Shares all relevant or useful information.",
+  
+      "communication-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L6.4</strong> Facilitates Group Interactions. Uses varied communication management techniques, brainstorming, consensus building, group problem solving, and conflict resolution; Demonstrates good meeting management techniques (e.g., agenda development, time management).",
+      "communication-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L6.3</strong> Makes Persuasive Oral Presentations. Uses clear and understandable voice that is free of extraneous phrases (i.e., <i>uhm</i> and <i>you know</i>); Uses effective audiovisual media (presentation software, exhibits, etc.); Stays on the topic; Engages in non-defensive Q&A; Stays within time allotment.<br> <strong>L6.2</strong> Prepares Effective Written Business Cases or Presentations. Uses accurate and complete presentation of facts; Uses logical presentation of arguments pro and con; Develops well-reasoned recommendations; Prepares concise executive summary.",
+      "communication-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L6.1</strong> Uses Generally Accepted English Grammar. Uses subject-verb agreement and parallel structure; Uses rules of punctuation and sentence and paragraph construction; Uses concise thematic construction.",
+  
+      "relationship-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L21.5</strong> Sustains Strong Personal Networks: Builds personal relationships with colleagues such that one can ask and readily receive favors and requests; Maintains contacts with others in the field for mutual assistance; Can call on others for support and, if needed, personal testimonials and references; Is recognized as “one of the”.<br> <strong>L21.4</strong> Establishes Important Relationships with Key Leaders: Works to meet key people in the health industry, the community, and other constituencies; Identifies the “movers and shakers” – today and the future – and establishes good working relationships with them.",
+      "relationship-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L21.3</strong> Sustains Formal Contacts: Organizes parties, outings, or special gatherings designed to improve or strengthen relationships with others; Creates forums for conducting business; Participates in a broad range of relationships with others who have the potential to become strong business allies.<br> <strong>L21.2</strong> Builds Friendly Rapport with Associates: Maintains friendly relations and rapport with contacts; Attends events with associates and other business contacts that provide informal mingling and contact such as business meals. Sporting events, and other outings; Finds things that one has in common with associates and uses them to build friendly relations.",
+      "relationship-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L21.1</strong> Develops or Sustains Informal Contacts: Makes or sustains informal contacts with others that extend beyond formal work relationships; Is approachable and able to engage in “small talk” and informal conversations.",
+	  	  
+      // Levels for Management & Leadership (change leadership, HR Management...)
+		 
+      "change-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L4.5</strong> Reinforces Change Vision Dramatically: Takes a dramatic action (other than giving a speech) to reinforce or enforce the change effort; Personally exemplifies or embodies the desired change through strong, symbolic actions that are consistent with the change.<br> <strong>L4.4</strong> Challenges Status Quo: Publicly challenges the status quo by comparing it to an ideal or a vision of change; Creates a realistic sense of crisis or a disequilibrium in order to prepare the ground for change; Energizes others for change.",
+      "change-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L4.3</strong> Ensures Change Message is Heard:  Deliver the message or vision for change to everyone affected; Repeats message wherever possible; Posts change messages (e.g., banners, plaques, or other physical and public reminders); Provides opportunities for others to engage in change initiatives.<br> <strong>L4.2</strong> Expresses Vision for Change: Defines an explicit vision for change (i.e., what should be different and how); Modifies or redefines a previous vision in specific terms; Outlines strategies for change.",
+      "change-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L4.1</strong> Identifies Areas for Change: Publicly defines one or more specific areas where change is needed; Identifies what needs to change, but may not completely describe the path to change.",
+	  
+      "hr-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L9.3</strong> Aligns Human Resource Functions with Strategy: Aligns human resource functions to achieve organizational strategic outcomes; Understands the importance of aligning recruitment and selection, job design and work systems, learning and development, reward and recognition, and succession planning.",
+      "hr-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L9.2</strong> Uses Alternative Compensation and Benefit Programs:  Conducts job analysis, evaluation, and grading; Uses compensation surveys; Understands compensation structures, including: market pricing, pay delivery models and their implications, benefits and their role in total compensation, and union wage and hour contract provisions; Uses compensation, benefit, and incentive programs to optimize performance of diverse employee stakeholders; Conducts performance assessments.",
+      "hr-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L9.1</strong> Is Familiar with Basic Employment Processes and Law: Demonstrates basic knowledge of employment management principles, policies, and law in relation to hiring,promotion, or dismissal;Applies human resources policies and procedures; Applies equal opportunity and federal contract compliance (EEOC/OFCCP), the disabilities act (ADA), fair labor standards (FLSA) and employee income, security, and refinement regulations (ERISA); Demonstrates a understanding of union/labor principles and practices (e.g., contracting, negotiations, grievance process, mediation).",
+	  
+      "it-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L12.4</strong> Seeks and Challenges the Organization to Use Leading-Edge and Developing Information Technology Stays up to date on the latest developments in information technology; Identifies new opportunities to use latest information technology in the organization. These uses fundamentally alter the way the organization operates or promotes wellness; Partners with the latest thinkers and developers to identify and implement breakthrough systems.",
+      "it-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L12.3</strong> Champions Decision Support Systems Implementation Provides staff and clinicians with state-of-the-art tools (such as handheld devices, notepad computers, etc) to access information, record data (including patient data) and make decisions; Supports use of Web-based diagnostic capabilities; Provides patients with access to their health information online, including scheduling and seeing laboratory and test data; Develops and resources a long-term (i.e., five years) information systems plan that includes intranet and Internet capabilities.<br> <strong>L12.2</strong> Actively Promotes Information Systems Implementation: Understands PC and network technologies and uses this knowledge to advocate integrated systems that collect, track and share information across local- and wide-area networks; Understands how information technology tools simplify, streamline and improve care, including the ability to make a cogent case for using these tools to clinical and administrative audiences; Personally uses and supports investment in databases, Web-based tools, and information systems.",
+      "it-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L12.1</strong> Recognizes the Potential of Information Systems in Process and Patient Service Improvement Is familiar with current technology for patient tracking (especially registration, billing and records management), financial automation and reporting, and reimbursement management; Is open to automation of paper-based processes.",
+	  
+      "innovative-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L14.5</strong> Creates New Concepts or Breakthrough Thinking:  Creates new concepts that are not obvious to others and not learned from previous education to explain situations or resolve problems; Looks at things in new ways that yield new or innovative approaches – breakthrough thinking; Shifts the paradigm; starts a new line of thought.<br> <strong>L14.4</strong> Clarifies Complex Ideas or Situations:  Makes complex ideas or situations clear simple, and/or understandable (e.g., re-framing the problem, use of analogy); Assembles ideas, issues, and observations into a clear and useful explanation; Restates existing observations or knowledge in a simpler fashion; Takes intricate data and puts it into lay terms; “boils down” Information.",
+      "innovative-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L14.3</strong> Applies “Tried and True” Concepts or Trends:  Uses knowledge of theory and different past trends or occurrences to look at current situations; Applies and modifies concepts or methods appropriately.<br> <strong>L14.2</strong> Recognizes Patterns Based on Life Experience: When looking at information, sees patterns, trends, or missing pieces/linkages; Notices when a current situation is similar or dissimilar to a past situation, and identifies the similarities and/or differences.",
+      "innovative-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L14.1</strong> Applied Basic Rules: Applies simple rules, common sense, evidence, and past experiences to identify problems; Recognizes when a current situation is exactly the same as a past situation.",
+	  
+      "project-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L20.3</strong> Provides Project Oversight and Sponsorship Identifies project performance requirements, including financing and ROI; Defines project requirements; Selects manager; Provides project plan and major decision review and oversight; Acquires resources; Manages major obstacles; Provides project performance reporting review and problem-solving.",
+      "project-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L20.2</strong> Manages Projects Effectively: Tracks performance against plan and budget; Holds vendors accountable; Holds team members accountable; Reports project outcomes; Adjusts plan and re-projects; Ensures delivery within prescribed timeframes and budget.",
+      "project-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L20.1</strong> Prepares Detailed Project Plans: Uses project management software; Establishes phases and steps with realistic timelines; Identifies required knowledge, skills, and abilities of team and vendors; Selects team; Identifies selection and contracting processes and criteria and selects vendor; Identifies performance requirements, measurement systems, and tracking and reporting processes; Establishes budget.",
+	  
+      "strategic-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L24.4</strong> Shapes Industry Strategy: Develops a perspective on long-term health and wellness trends and developments that is respected by colleagues and leading policymakers; Helps to shape industry competitive positioning through policy making forums and industry-specific strategic groups.",
+      "strategic-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L24.3</strong> Aligns Organization to Address Long-term Environment:  Understands the forces that are shaping health over the next 5 to 10 years (market, social, cultural, economic, and political); Aligns strategy, structure, or people with the long-term environment; Develops a long-term organizational strategy (including competitive, financial, structural, and people elements) to position the organization for success over the next 10 years.<br> <strong>L24.2</strong> Develops Strategy to Address Environmental Forces: Positions the organization in light of the environmental forces over the next three to five years; Develops strategic goals and plans for the organization that take advantage of its strengths, addresses its shortcomings, builds on opportunities, and attempts to minimize environmental threats; Aligns organizational units and investment strategy (financial, people, technology, materials) to achieve strategy.",
+      "strategic-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L24.1</strong> Conduct Environmental Scanning: Performs analyses that identify the competitive/market, governmental and regulatory, public opinion, scientific, and technological forces that currently and will shape the organization; Identifies the strengths and challenges of the organizations vis-a-vis the forces today and into the future; Identifies the required social and economic position of the organization in light of the environmental scan.",
+
+      // Levels for Professionalism (accountability, self-confidence...)
+		
+      "accountability-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L1.5</strong> Creates Culture of Accountability: Creates a culture of strong accountability throughout the organization; holds others accountable for demanding high performance and enforcing consequences of non-performance and taking action; accepts responsibility for the results of their own work and that is delegated to others.<br> <strong>L1.4</strong> Confronts Performance Problems: Openly and directly confronts individual and team performance shortfalls and problems; Holds people accountable for performance; Ensures timely resolution to performance deficiencies; Appropriately dismisses people for cause.",
+      "accountability-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L1.3</strong> Demands High Performance: Imposes new, different, or higher standards of performance with little input from others; Insists on compliance with own orders or requests; Monitors performance against clear standards; Ensures promised results are achieved; Demands high performance, quality, and resources; Issues clear warnings about consequences for non-performance; Shares results with stakeholders.<br> <strong>L1.2</strong> Sets Limits: Establishes high but achievable performance, quality, and resource utilization standards; Firmly say no to unreasonable requests; Sets limits for others’ behavior and actions; Limits others’ options to force them to make desired resources available.",
+      "accountability-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L1.1</strong> Communicates Requirements and Expectations:  Gives basic directions; Makes needs and requirements reasonably clear; Ensures understanding of task requirements and performance expectations; Explicitly delegate details of routine tasks in order to free oneself for more valuable or longer-range considerations.",
+	  
+      "confidence-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L22.5</strong> Chooses Extremely Challenging Situations. Willingly takes on extremely challenging (i.e., those that are personally risky) assignments; Confronts management or others with power directly; Can be blunt and bold when necessary.<br> <strong>L22.4</strong> Takes on Challenges. Seeks challenging assignments and is excited by a challenge; Looks for and gets new responsibilities; Speaks up when he or she disagrees with management or others in power; but disagrees politely, stating own view clearly and confidently - even in a conflict.",
+      "confidence-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L22.3</strong> States Confidence in Own Ability. Describes self as an expert, someone who makes things happen, a prime mover, or a source of authority; Sees self as among the top performers in an organization; Explicitly states confidence in own judgment or abilities; Communicates self-assuredness to take on new roles, responsibilities, and challenges.<br> <strong>L22.2</strong> Acts Confidently at the Limits or Slightly Beyond the Limits of Job or Role. Makes decisions without asking others; Makes decisions even when others disagree; Acts outside formal role or authority; Acts in uncertain circumstances.",
+      "confidence-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L22.1</strong> Acts Confidently within Job or Role. Works without needing direct supervision; Appears confident in person; Presents self well.",
+	  
+      "development-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L23.4</strong> Pursues Long-term Personal Development. Independently analyzes future developmental needs, factoring in accurate self-assessment, feedback from others, personal career goals, and organization direction; Proactively pursues multi-year personal development, including willingness to tackle fundamental behavior change (e.g., from pacesetter to consensus builder).",
+      "development-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L23.3</strong> Considers the Impact One Has on Others. Is aware of what behaviors and styles get the best results and matches styles to the situation; Reflects on the impact one has on others prior to making decisions or taking actions; Modifies behaviors in response to informal cues as well as formal feedback and integrates the results into personal development efforts and goals; Tries out new leadership techniques and adopts those with positive impact.<br> <strong>L23.2</strong> Improves Own Performance. Regularly reflects on own performance including events that were successful and those that were less so; Learns from less successful events, missteps, and challenges; Sets annual improvement goals; Is open to coaching.",
+      "development-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L23.1</strong> Seeks Feedback. Routinely seeks feedback from others, including those who are likely to be critical; Appreciates the need to learn and grow.",
+	  
+      "team-advanced": "<h3>Level Description<br> 3 - ADVANCED</h3><br> <strong>L26.5</strong> Demonstrates Leadership: Establishes norms for team behavior; Personally models the norms; Takes appropriate action when members violate the norms; Works with team members to gain their personal commitment and energy to the team mission, goals, and norms; Uses own positional power, trust, respect of others, and relationships to remove or smooth over obstacles that the team meets; Coaches and develops team members to top performance.<br> <strong>L26.4</strong> Obtains Resources/Takes Care of the Team: Obtains needed personnel, resources, and information to meet team goals; Holds team members accountable for their contributions to team success, including bringing team resources to their assistance; Protects the group and its reputation vis-à-vis the larger organization or the community at large; Provides or secures needed support and development for both the individuals and the team as a group.",
+      "team-intermediate": "<h3>Level Description<br> 2 - INTERMEDIATE</h3><br> <strong>L26.3</strong> Promotes Team Effectiveness: Creates the conditions that enable the team to perform at its best (e.g., setting clear direction, providing appropriate structure, getting the right people); Determines team membership (including selection and dismissal), team assignments, performance management, and team development actions in a manner that promotes team morale and productivity; Obtains input from others to promote the effectiveness of the group or process; Builds team spirit for purposes of promoting the effectiveness of the group or process.<br> <strong>L26.2</strong> Keeps People Informed: Provides essential information for decision-making and fulfillment of responsibilities individually and collectively; Lets people affected by the team know what is happening and the status of decisions; Explains the reasons behind a decision promptly and candidly.",      "team-basic": "<h3>Level Description<br> 1 - BASIC</h3><br> <strong>L26.1</strong> Manages Team Meetings Well: Conducts efficient and effective meetings; States meeting agendas and objectives; Controls time and pace; Makes assignments.",
+
+};
+   
+
+    // Set content and display the level-specific pop-up
+    const levelPopup = document.getElementById('level-popup');
+    const levelPopupText = document.getElementById('level-popup-text');
+    levelPopupText.innerHTML = levels[level] || "No information available for this level.";
+    levelPopup.setAttribute('aria-hidden', 'false');
+    levelPopup.focus();
+}
+
+// Close the main pop-up content box
+function closePopup() {
+    const popup = document.getElementById('popup-content');
+    popup.setAttribute('aria-hidden', 'true');
+    closeLevelPopup(); // Ensure the level box is also closed
+}
+
+// Close the level-specific pop-up box
+function closeLevelPopup() {
+    const levelPopup = document.getElementById('level-popup');
+    levelPopup.setAttribute('aria-hidden', 'true');
+}
+
+// Show the selected box and move focus to it
+function showBox(id) {
+    const boxes = document.querySelectorAll('.definition-box');
+    boxes.forEach(box => {
+        box.setAttribute('aria-hidden', box.id !== id);
+    });
+    const selectedBox = document.getElementById(id);
+    if (selectedBox) {
+        selectedBox.setAttribute('aria-hidden', 'false');
+        selectedBox.focus();
+    }
+}
+
+  // Add event listeners to all quadrants
+document.addEventListener('DOMContentLoaded', function() {
+    const quadrants = document.querySelectorAll('.quadrant');
+    
+    quadrants.forEach(quadrant => {
+        quadrant.addEventListener('click', handleQuadrantClick);
+        quadrant.addEventListener('keypress', handleQuadrantKeypress);
+    });
+});
+
+function handleQuadrantClick(event) {
+    // First, force close all popups
+    document.getElementById('popup-content').setAttribute('aria-hidden', 'true');
+    document.getElementById('level-popup').setAttribute('aria-hidden', 'true');
+    
+    // Close all definition boxes
+    document.querySelectorAll('.definition-box').forEach(box => {
+        box.setAttribute('aria-hidden', 'true');
+    });
+    
+    // Then show the selected quadrant's box
+    const quadrantClass = Array.from(this.classList).find(cls => cls !== 'quadrant');
+    if (quadrantClass) {
+        showBox(`${quadrantClass}-box`);
+    }
+}
+
+function handleQuadrantKeypress(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+        // First, force close all popups
+        document.getElementById('popup-content').setAttribute('aria-hidden', 'true');
+        document.getElementById('level-popup').setAttribute('aria-hidden', 'true');
+        
+        // Close all definition boxes
+        document.querySelectorAll('.definition-box').forEach(box => {
+            box.setAttribute('aria-hidden', 'true');
+        });
+        
+        // Then show the selected quadrant's box
+        const quadrantClass = Array.from(this.classList).find(cls => cls !== 'quadrant');
+        if (quadrantClass) {
+            showBox(`${quadrantClass}-box`);
+        }
+    }
+}
+
+// Add keyboard support for Escape key to close popups
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closePopup();
+        closeLevelPopup();
+    }
+});
+
+</script>
+<footer>
+  <div style="text-align: center;">
+    <p><sup>*</sup><small>Based on the NCHL Health Leadership Competency Model 2.1™
+	<br>This web page resulted from a collaboration between TWU's <a href="https://twu.edu/faculty-success/" target="_blank">Center for Faculty Success</a> and its Healthcare Administration Program.</br></small></p>
+  </div>
+</footer>
+</div>
+</body>
+</html>
